@@ -17,6 +17,8 @@ from envs import make_env
 from tdmpc2 import TDMPC2
 from trainer.offline_trainer import OfflineTrainer
 from trainer.online_trainer import OnlineTrainer
+from trainer.sac_trainer import SACTrainer
+from algorithms.sac import SACAgent
 from common.logger import Logger
 
 torch.backends.cudnn.benchmark = True
@@ -49,14 +51,24 @@ def train(cfg: dict):
 	set_seed(cfg.seed)
 	print(colored('Work dir:', 'yellow', attrs=['bold']), cfg.work_dir)
 
-	trainer_cls = OfflineTrainer if cfg.multitask else OnlineTrainer
-	trainer = trainer_cls(
-		cfg=cfg,
-		env=make_env(cfg),
-		agent=TDMPC2(cfg),
-		buffer=Buffer(cfg),
-		logger=Logger(cfg),
-	)
+	env = make_env(cfg)
+	if cfg.algo == 'sac':
+	        trainer = SACTrainer(
+	                cfg=cfg,
+	                env=env,
+	                agent=SACAgent(cfg),
+	                buffer=None,
+	                logger=Logger(cfg),
+	        )
+	else:
+	        trainer_cls = OfflineTrainer if cfg.multitask else OnlineTrainer
+	        trainer = trainer_cls(
+	                cfg=cfg,
+	                env=env,
+	                agent=TDMPC2(cfg),
+	                buffer=Buffer(cfg),
+	                logger=Logger(cfg),
+	        )
 	trainer.train()
 	print('\nTraining completed successfully')
 
