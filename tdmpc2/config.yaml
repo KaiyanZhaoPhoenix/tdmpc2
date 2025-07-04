@@ -5,6 +5,7 @@ defaults:
 task: dog-run
 obs: state
 episodic: false
+algo: tdmpc2
 
 # evaluation
 checkpoint: ???
@@ -23,6 +24,9 @@ lr: 3e-4
 enc_lr_scale: 0.3
 grad_clip_norm: 20
 tau: 0.01
+sac_gamma: 0.99
+sac_tau: 0.005
+sac_alpha: 0.2
 discount_denom: 5
 discount_min: 0.95
 discount_max: 0.995
